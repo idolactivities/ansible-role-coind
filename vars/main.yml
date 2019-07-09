@@ -8,6 +8,9 @@ _coind_latest_version:
 _coind_binary:
   bitcoin: bitcoind
 
+_coind_binary_cli:
+  bitcoin: bitcoin-cli
+
 _coind_sha256sums:
   bitcoin:
     0.18.0: 5146ac5310133fbb01439666131588006543ab5364435b748ddfc95a8cb8d63f

@@ -18,6 +18,11 @@
     owner: "{{ coind_user }}"
     group: "{{ coind_group }}"
 
+- name: Create coind configuration directory
+  file:
+    path: "/etc/{{ coind_name }}"
+    state: directory
+
 - name: Download coind tarball
   get_url:
     url: "{{ coind_url }}"
@@ -42,12 +47,42 @@
     remote_src: yes
     mode: 0755
 
+- name: Copy over coind CLI
+  copy:
+    src: "{{ coind_package_cache }}/{{ coind_name }}/{{ coind_version }}/bin/{{ coind_binary_cli }}"
+    dest: "/usr/bin/{{ coind_binary_cli }}"
+    remote_src: yes
+    mode: 0755
+  when: "coind_install_cli | bool"
+
 - name: Copy over coind daemon's manpage
   copy:
     src: "{{ coind_package_cache }}/{{ coind_name }}/{{ coind_version }}/share/man/man1/{{ coind_binary }}.1"
     dest: "/usr/share/man/man1/{{ coind_binary }}.1"
     remote_src: yes
     mode: 0644
+
+- name: Generate coind configuration file
+  template:
+    src: coin.conf.j2
+    dest: "/etc/{{ coind_name }}/{{ coind_name }}.conf"
+  notify:
+    - restart coind.service
+
+- name: Install coind systemd service
+  template:
+    src: coind.service.j2
+    dest: "/lib/systemd/system/{{ coind_binary }}.service"
+  notify:
+    - restart coind.service
+  when: "ansible_service_mgr == 'systemd'"
+
+- name: Start and enable the coind service
+  systemd:
+    name: "{{ coind_binary }}.service"
+    state: started
+    enabled: yes
+  when: "ansible_service_mgr == 'systemd'"
 
 - import_tasks: ansible_facts.yml
 

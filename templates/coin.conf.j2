@@ -1,0 +1,12 @@
+{{ ansible_managed | comment }}
+{% for setting, value in coind_config.items() %}
+{%   if value is iterable and value is not string %}
+{%     for sub in value %}
+{{ setting }}={{ sub }}
+{%     endfor %}
+{%   else %}
+{{ setting }}={{ value }}
+{%   endif %}
+{% endfor %}
+
+# vim: ft=jinja

@@ -1,0 +1,14 @@
+galaxy_info:
+  author: Musee Ullah
+  description: Installs and configures a coind (e.g. bitcoind).
+  company: Fressets
+  license: MIT
+  min_ansible_version: 2.4
+  platforms:
+    - name: Debian
+      versions:
+      - stretch
+  galaxy_tags:
+    - bitcoin
+    - cryptocurrency
+dependencies: []

@@ -5,3 +5,13 @@
     - fressets.coind
   vars:
     coind_version: 0.18.0
+    coind_config:
+      testnet: 0
+      listen: 1
+      server: 1
+      rpcbind: 0.0.0.0
+      rpcauth:
+        - "vagrant:ede8b3fd6b02f475580dfa70c6dfb41c$6ceda1571ef74c0b3dd63180edf0f5ed6e4ca0cb0a819b59f374780c827e2028"
+      rpcuser: vagrant
+      rpcpassword: vagrant
+    coind_install_cli: yes
