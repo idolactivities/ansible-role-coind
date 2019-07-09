@@ -10,6 +10,7 @@ coind_package_cache: "{{ coind_home }}/.cache/ansible"
 coind_url: "{{ _coind_urls[coind_name] }}"
 coind_version: "{{ _coind_latest_version[coind_name] }}"
 coind_sha256sum: "{{ _coind_sha256sums[coind_name][coind_version] }}"
+coind_binary: "{{ _coind_binary[coind_name] }}"
 
 coind_config: {}
 # For configuration options, refer to official documentation, e.g. bitcoin:

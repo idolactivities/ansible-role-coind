@@ -30,10 +30,26 @@
   unarchive:
     src: "{{ coind_package_cache }}/{{ coind_name }}/{{ coind_version }}.tar.gz"
     dest: "{{ coind_package_cache }}/{{ coind_name }}/{{ coind_version }}/"
-    remote_src: true
+    remote_src: yes
     extra_opts: ["--strip-components=1"]
     owner: "{{ coind_user }}"
     group: "{{ coind_group }}"
+
+- name: Copy over coind daemon
+  copy:
+    src: "{{ coind_package_cache }}/{{ coind_name }}/{{ coind_version }}/bin/{{ coind_binary }}"
+    dest: "/usr/bin/{{ coind_binary }}"
+    remote_src: yes
+    mode: 0755
+
+- name: Copy over coind daemon's manpage
+  copy:
+    src: "{{ coind_package_cache }}/{{ coind_name }}/{{ coind_version }}/share/man/man1/{{ coind_binary }}.1"
+    dest: "/usr/share/man/man1/{{ coind_binary }}.1"
+    remote_src: yes
+    mode: 0644
+
+- import_tasks: ansible_facts.yml
 
 # TODO: Check for bash-completion, install bitcoind completion files
 # https://github.com/bitcoin/bitcoin/tree/master/contrib

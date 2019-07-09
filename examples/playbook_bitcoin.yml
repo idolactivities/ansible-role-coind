@@ -3,3 +3,5 @@
   become: yes
   roles:
     - fressets.coind
+  vars:
+    coind_version: 0.18.0

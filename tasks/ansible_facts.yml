@@ -1,0 +1,10 @@
+---
+- name: Ensure Ansible facts directory exists
+  file:
+    path: /etc/ansible/facts.d
+    state: directory
+
+- name: Store version as a fact
+  copy:
+    content: "{'{{ coind_name }}_version': '{{ coind_version }}'}"
+    dest: "/etc/ansible/facts.d/coind_{{ coind_name }}.fact"
