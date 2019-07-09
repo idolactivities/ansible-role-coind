@@ -1,0 +1,44 @@
+---
+coind_name: bitcoin
+
+coind_user: "{{ coind_name }}"
+coind_group: "{{ coind_user }}"
+coind_home: "/var/lib/{{ coind_name }}"
+coind_package_cache: "{{ coind_home }}/.cache/ansible"
+#coind_prefix: "/usr/bin/{{ coind_name }}/"
+
+coind_url: "{{ _coind_urls[coind_name] }}"
+coind_version: "{{ _coind_latest_version[coind_name] }}"
+coind_sha256sum: "{{ _coind_sha256sums[coind_name][coind_version] }}"
+
+coind_config: {}
+# For configuration options, refer to official documentation, e.g. bitcoin:
+# https://github.com/bitcoin/bitcoin/blob/0.18/share/examples/bitcoin.conf
+#
+#coind_config:
+#  testnet: 0
+#  proxy: 127.0.0.1:9050
+#  bind: 0.0.0.0:1234
+#  whitebind: 0.0.0.0:1234
+#  addnode:
+#    - 1.2.3.4
+#    - 2.3.4.5:5783
+#  connect:
+#    - 3.4.5.6
+#    - 4.6.7.8:15891
+#  listen: 1
+#  maxconnections: 100
+#  server: 0
+#  rpcbind: 0.0.0.0
+#  rpcport: 8332
+#  rpcauth:
+#    - "alice:f7efda5c189b999524f151318c0c86$d5b51b3beffbc02b724e5d095828e0bc8b2456e9ac8757ae3211a5d9b16a22ae"
+#    - "bob:b2dd077cb54591a2f3139e69a897ac$4e71f08d48b4347cf8eff3815c0e25ae2e9a4340474079f55705f40574f4ec99"
+#  rpcuser: alice_plain
+#  rpcpassword: "DONT_USE_THIS_YOU_WILL_GET_ROBBED_8ak1gI25KFTvjovL3gAM967mies3E="
+#  rpcclienttimeout: 30
+#  rpcallowip:
+#    - 0.0.0.0/0
+#  rpcconnect: 127.0.0.1
+#  txconfirmtarget: 6
+#  paytxfee: 0.0001

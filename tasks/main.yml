@@ -1,0 +1,39 @@
+---
+- import_tasks: validate_variables.yml
+
+- name: Create coind user group
+  group:
+    name: "{{ coind_group }}"
+
+- name: Create coind user and home directory
+  user:
+    name: "{{ coind_user }}"
+    group: "{{ coind_group }}"
+    home: "{{ coind_home }}"
+
+- name: Create coind package cache directory
+  file:
+    path: "{{ coind_package_cache }}/{{ coind_name }}/{{ coind_version }}"
+    state: directory
+    owner: "{{ coind_user }}"
+    group: "{{ coind_group }}"
+
+- name: Download coind tarball
+  get_url:
+    url: "{{ coind_url }}"
+    dest: "{{ coind_package_cache }}/{{ coind_name }}/{{ coind_version }}.tar.gz"
+    checksum: "sha256:{{ coind_sha256sum }}"
+    owner: "{{ coind_user }}"
+    group: "{{ coind_group }}"
+
+- name: Unpack the coind tarball
+  unarchive:
+    src: "{{ coind_package_cache }}/{{ coind_name }}/{{ coind_version }}.tar.gz"
+    dest: "{{ coind_package_cache }}/{{ coind_name }}/{{ coind_version }}/"
+    remote_src: true
+    extra_opts: ["--strip-components=1"]
+    owner: "{{ coind_user }}"
+    group: "{{ coind_group }}"
+
+# TODO: Check for bash-completion, install bitcoind completion files
+# https://github.com/bitcoin/bitcoin/tree/master/contrib

@@ -1,0 +1,11 @@
+---
+_coind_urls:
+  bitcoin: "https://bitcoincore.org/bin/bitcoin-core-{{ coind_version }}/bitcoin-{{ coind_version }}-x86_64-linux-gnu.tar.gz"
+
+_coind_latest_version:
+  bitcoin: 0.18.0
+
+_coind_sha256sums:
+  bitcoin:
+    0.18.0: 5146ac5310133fbb01439666131588006543ab5364435b748ddfc95a8cb8d63f
+    0.16.3: 5d422a9d544742bc0df12427383f9c2517433ce7b58cf672b9a9b17c2ef51e4f

@@ -1,0 +1,6 @@
+---
+- name: Ensure selected coin is supported
+  assert:
+    that:
+      - coind_name in _coind_urls
+    fail_msg: "This role does not have definitions for the coin you'd selected. Please try another."
