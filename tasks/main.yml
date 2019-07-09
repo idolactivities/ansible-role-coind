@@ -10,6 +10,8 @@
     name: "{{ coind_user }}"
     group: "{{ coind_group }}"
     home: "{{ coind_home }}"
+    shell: /usr/sbin/nologin
+    system: yes
 
 - name: Create coind package cache directory
   file:
@@ -22,6 +24,9 @@
   file:
     path: "/etc/{{ coind_name }}"
     state: directory
+    mode: 0750
+    owner: "{{ coind_user }}"
+    group: "{{ coind_group }}"
 
 - name: Download coind tarball
   get_url:
@@ -35,6 +40,7 @@
   unarchive:
     src: "{{ coind_package_cache }}/{{ coind_name }}/{{ coind_version }}.tar.gz"
     dest: "{{ coind_package_cache }}/{{ coind_name }}/{{ coind_version }}/"
+    creates: "{{ coind_package_cache }}/{{ coind_name }}/{{ coind_version }}/bin"
     remote_src: yes
     extra_opts: ["--strip-components=1"]
     owner: "{{ coind_user }}"
@@ -62,10 +68,21 @@
     remote_src: yes
     mode: 0644
 
+- name: Copy over coind CLI's manpage
+  copy:
+    src: "{{ coind_package_cache }}/{{ coind_name }}/{{ coind_version }}/share/man/man1/{{ coind_binary_cli }}.1"
+    dest: "/usr/share/man/man1/{{ coind_binary_cli }}.1"
+    remote_src: yes
+    mode: 0644
+  when: "coind_install_cli | bool"
+
 - name: Generate coind configuration file
   template:
     src: coin.conf.j2
     dest: "/etc/{{ coind_name }}/{{ coind_name }}.conf"
+    mode: 0640
+    owner: "{{ coind_user }}"
+    group: "{{ coind_group }}"
   notify:
     - restart coind.service
 
