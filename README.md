@@ -53,3 +53,62 @@ To bring up the development VM, use Vagrant with your favourite provider:
 
 Depending on what you're changing, you may want to write another playbook under
 `examples/` and update the `Vagrantfile` to use that playbook.
+
+Role Variables
+--------------
+
+If you're lost, you may want to review the content within the `examples/`
+directory to get an idea of how to write your own playbook.
+
+All of these role variables are completely optional (at least, at this point in
+time) for a working installation, but you'll likely want to set a few.
+
+    coind_name: bitcoin
+
+Specifies which coin's software to deploy. Currently, only `bitcoin` is
+supported, but support for other coins will be implemented in due time.
+
+    coind_install_cli: no
+
+Specifies whether or not to install the CLI utility on the destination host.
+This should only be necessary if you plan to SSH into the host and interact
+directly with the coin's RPC API using it.
+
+    coind_user: "{{ coind_name }}"
+    coind_group: "{{ coind_user }}"
+    coind_home: "/var/lib/{{ coind_name }}"
+
+Specifies the user to run the coin software as (by default, the name of the
+coin itself) and the location of its block database, etc.
+
+    coind_url: "{{ _coind_urls[coind_name] }}"
+    coind_version: "{{ _coind_latest_version[coind_name] }}"
+    coind_sha256sum: "{{ _coind_sha256sums[coind_name][coind_version] }}"
+
+Specifies where to download the release tarball from, which version to use, and
+the SHA256 sum of that tarball. These are by default defined in variables in
+`vars/main.yml` so you can validate these yourself, but you can easily just
+override these with your own.
+
+    coind_binary: "{{ _coind_binary[coind_name] }}"
+    coind_binary_cli: "{{ _coind_binary_cli[coind_name] }}"
+
+These are the binary names of the coin daemon and CLI utility and are by
+default defined in `vars/main.yml`. They're typically in the form of
+`{{ coind_name }}d` and `{{ coind_name }}-cli`.
+
+    coind_config_global: {}
+    coind_config_main: {}
+    coind_config_test: {}
+    coind_config_regtest: {}
+
+These get templated into the coin's configuration file and are typically
+key-stringvalue dictionaries. The global config is where most configuration
+options will typically fall into, but there are a few options that by default
+only apply to mainnet and must be defined in their own section to be applied to
+testnet/regtest (e.g. `port`, `rpcbind`).
+
+For a list of configuration options, refer to the official documentation of the
+coin that you are deploying. Note that the configuration file also accepts most
+command line flags as well, so place any of those here. There is also an
+example in the `defaults/main.yml` file that may prove useful.
