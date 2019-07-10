@@ -1,10 +1,10 @@
 ---
-- name: Ensure Ansible facts directory exists
+- name: Create a directory for storing Ansible facts
   file:
     path: /etc/ansible/facts.d
     state: directory
 
-- name: Store version as a fact
+- name: Store the installed coin's version as an Ansible fact
   copy:
     content: "{'{{ coind_name }}_version': '{{ coind_version }}'}"
     dest: "/etc/ansible/facts.d/coind_{{ coind_name }}.fact"

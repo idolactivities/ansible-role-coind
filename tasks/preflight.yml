@@ -1,0 +1,21 @@
+---
+# This file is intended to run a couple of validation checks for the deployment,
+# mainly to check whether role variables are configured correctly and if our
+# deployment environment is supported by the role.
+
+- name: Ensure coind_name is set to a supported coin
+  assert:
+    that:
+      - coind_name in _coind_urls
+    fail_msg: >
+      This role does not have definitions for the coin you'd selected. Please
+      try another.
+
+- name: Ensure destination host is systemd-based
+  assert:
+    that:
+      - ansible_service_mgr == "systemd"
+    fail_msg: >
+      This role only supports systemd distributions. If you require support for
+      another service manager, please open an issue (or, if possible, a pull
+      request) on GitHub.

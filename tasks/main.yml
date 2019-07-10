@@ -1,11 +1,17 @@
 ---
-- import_tasks: validate_variables.yml
+- import_tasks: preflight.yml
 
-- name: Create coind user group
+- name: Which coin are we deploying today?
+  debug:
+    msg: "{{ coind_name }} v{{ coind_version }} will be deployed to this host."
+
+# We could technically include the name of the coin inside task names, but that
+# removes some flexibility (like the ability to use `--start-at-task`).
+- name: Create user group for this coin
   group:
     name: "{{ coind_group }}"
 
-- name: Create coind user and home directory
+- name: Create a user and their home directory for this coin
   user:
     name: "{{ coind_user }}"
     group: "{{ coind_group }}"
@@ -13,93 +19,97 @@
     shell: /usr/sbin/nologin
     system: yes
 
-- name: Create coind package cache directory
+- name: Create the config directory for this coin
   file:
-    path: "{{ coind_package_cache }}/{{ coind_name }}/{{ coind_version }}"
+    path: "{{ coind_config_path }}"
     state: directory
     owner: "{{ coind_user }}"
     group: "{{ coind_group }}"
-
-- name: Create coind configuration directory
-  file:
-    path: "/etc/{{ coind_name }}"
-    state: directory
     mode: 0750
+
+- name: Create a cache directory for storing this coin's artifacts
+  file:
+    path: "{{ coind_artifact_path }}"
+    state: directory
     owner: "{{ coind_user }}"
     group: "{{ coind_group }}"
+    mode: 0750
 
-- name: Download coind tarball
+- name: Download and verify the release tarball for this coin
   get_url:
     url: "{{ coind_url }}"
-    dest: "{{ coind_package_cache }}/{{ coind_name }}/{{ coind_version }}.tar.gz"
+    dest: "{{ coind_artifact_tarball }}"
     checksum: "sha256:{{ coind_sha256sum }}"
     owner: "{{ coind_user }}"
     group: "{{ coind_group }}"
+    mode: 0640
 
-- name: Unpack the coind tarball
+- name: Extract this coin's release tarball into the cache
   unarchive:
-    src: "{{ coind_package_cache }}/{{ coind_name }}/{{ coind_version }}.tar.gz"
-    dest: "{{ coind_package_cache }}/{{ coind_name }}/{{ coind_version }}/"
-    creates: "{{ coind_package_cache }}/{{ coind_name }}/{{ coind_version }}/bin"
+    src: "{{ coind_artifact_tarball }}"
     remote_src: yes
+    dest: "{{ coind_artifact_path }}"
     extra_opts: ["--strip-components=1"]
+    creates: "{{ coind_artifact_path }}/bin/{{ coind_binary }}"
     owner: "{{ coind_user }}"
     group: "{{ coind_group }}"
 
-- name: Copy over coind daemon
+- name: Install this coin's daemon binary
   copy:
-    src: "{{ coind_package_cache }}/{{ coind_name }}/{{ coind_version }}/bin/{{ coind_binary }}"
-    dest: "/usr/bin/{{ coind_binary }}"
+    src: "{{ coind_artifact_path }}/bin/{{ coind_binary }}"
     remote_src: yes
+    dest: "{{ coind_binary_install_path }}/{{ coind_binary }}"
     mode: 0755
 
-- name: Copy over coind CLI
+- name: Install the manpage for this coin's daemon
   copy:
-    src: "{{ coind_package_cache }}/{{ coind_name }}/{{ coind_version }}/bin/{{ coind_binary_cli }}"
-    dest: "/usr/bin/{{ coind_binary_cli }}"
+    src: "{{ coind_artifact_path }}/share/man/man1/{{ coind_binary }}.1"
     remote_src: yes
-    mode: 0755
-  when: "coind_install_cli | bool"
-
-- name: Copy over coind daemon's manpage
-  copy:
-    src: "{{ coind_package_cache }}/{{ coind_name }}/{{ coind_version }}/share/man/man1/{{ coind_binary }}.1"
-    dest: "/usr/share/man/man1/{{ coind_binary }}.1"
-    remote_src: yes
+    dest: "{{ coind_manpage_install_path }}/{{ coind_binary }}.1"
     mode: 0644
 
-- name: Copy over coind CLI's manpage
-  copy:
-    src: "{{ coind_package_cache }}/{{ coind_name }}/{{ coind_version }}/share/man/man1/{{ coind_binary_cli }}.1"
-    dest: "/usr/share/man/man1/{{ coind_binary_cli }}.1"
-    remote_src: yes
-    mode: 0644
-  when: "coind_install_cli | bool"
+- block:
+  - name: Install this coin's CLI utility binary
+    copy:
+      src: "{{ coind_artifact_path }}/bin/{{ coind_binary_cli }}"
+      remote_src: yes
+      dest: "{{ coind_binary_install_path }}/{{ coind_binary_cli }}"
+      mode: 0755
 
-- name: Generate coind configuration file
+  - name: Install the manpage for this coin's CLI utility
+    copy:
+      src: "{{ coind_artifact_path }}/share/man/man1/{{ coind_binary_cli }}.1"
+      remote_src: yes
+      dest: "{{ coind_manpage_install_path }}/{{ coind_binary_cli }}.1"
+      mode: 0644
+  when: coind_install_cli | bool
+
+# TODO: It's possible to run a systemd unit as a user, but requires dbus setup.
+# Maybe if there's a need for it later on, we can implement it.
+# Ref: https://docs.ansible.com/ansible/latest/modules/systemd_module.html
+
+- name: Generate and install this coin's configuration file
   template:
     src: coin.conf.j2
-    dest: "/etc/{{ coind_name }}/{{ coind_name }}.conf"
-    mode: 0640
+    dest: "{{ coind_config_path }}/{{ coind_name }}.conf"
     owner: "{{ coind_user }}"
     group: "{{ coind_group }}"
+    mode: 0640
   notify:
-    - restart coind.service
+    - restart the coin daemon
 
-- name: Install coind systemd service
+- name: Install the systemd unit file for this coin's daemon
   template:
     src: coind.service.j2
-    dest: "/lib/systemd/system/{{ coind_binary }}.service"
+    dest: "{{ coind_systemd_install_path }}/{{ coind_binary }}.service"
   notify:
-    - restart coind.service
-  when: "ansible_service_mgr == 'systemd'"
+    - restart the coin daemon
 
-- name: Start and enable the coind service
+- name: Start and enable the coin daemon's service
   systemd:
     name: "{{ coind_binary }}.service"
     state: started
     enabled: yes
-  when: "ansible_service_mgr == 'systemd'"
 
 - import_tasks: ansible_facts.yml
 

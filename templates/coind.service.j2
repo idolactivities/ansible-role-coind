@@ -1,17 +1,15 @@
 {{ ansible_managed | comment }}
-
-# Refer to the bitcoind source repository for changes
-# https://github.com/bitcoin/bitcoin/blob/master/contrib/init/bitcoind.service
-
+{# Refer to the bitcoind source repository for changes #}
+{# https://github.com/bitcoin/bitcoin/blob/master/contrib/init/bitcoind.service #}
 [Unit]
 Description={{ coind_name }} daemon
 After=network.target
 
 [Service]
-ExecStart=/usr/bin/bitcoind -daemon \
-                            -pid=/var/run/{{ coind_binary }}/{{ coind_binary }}.pid \
-                            -conf=/etc/{{ coind_name }}/{{ coind_name }}.conf \
-                            -datadir={{ coind_home }}
+ExecStart={{ coind_binary_install_path }}/{{ coind_binary }} -daemon \
+          -pid=/var/run/{{ coind_binary }}/{{ coind_binary }}.pid \
+          -conf={{ coind_config_path }}/{{ coind_name }}.conf \
+          -datadir={{ coind_home }}
 Type=forking
 PIDFile=/run/{{ coind_binary }}/{{ coind_binary }}.pid
 Restart=on-failure
