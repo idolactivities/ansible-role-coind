@@ -43,11 +43,27 @@
     owner: "{{ coind_user }}"
     group: "{{ coind_group }}"
     mode: 0640
+  when: not coind_offline_install | bool
+
+- block:
+  - name: Create a cache directory for storing this coin's artifacts [offline install]
+    file:
+      path: "{{ coind_offline_artifact_path }}"
+      state: directory
+
+  - name: Download and verify the release tarball for this coin [offline install]
+    get_url:
+      url: "{{ coind_url }}"
+      dest: "{{ coind_offline_artifact_tarball }}"
+      checksum: "sha256:{{ coind_sha256sum }}"
+  delegate_to: localhost
+  become: no
+  when: coind_offline_install | bool
 
 - name: Extract this coin's release tarball into the cache
   unarchive:
-    src: "{{ coind_artifact_tarball }}"
-    remote_src: yes
+    src: "{{ coind_offline_install | ternary(coind_offline_artifact_tarball, coind_artifact_tarball) }}"
+    remote_src: "{{ not coind_offline_install | bool }}"
     dest: "{{ coind_artifact_path }}"
     extra_opts: ["--strip-components=1"]
     creates: "{{ coind_artifact_path }}/bin/{{ coind_binary }}"

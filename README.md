@@ -90,6 +90,17 @@ the SHA256 sum of that tarball. These are by default defined in variables in
 `vars/main.yml` so you can validate these yourself, but you can easily just
 override these with your own.
 
+    coind_offline_install: no
+    coind_offline_artifact_path: "~/.cache/ansible/{{ coind_name }}"
+    coind_offline_artifact_tarball: "{{ coind_offline_artifact_path }}/{{ coind_name }}-{{ coind_version }}.tar.gz"
+
+For hosts with limited Internet access, you may want to download release
+tarballs locally first and then push those files to the host. Set
+`coind_offline_install` to yes to enable this. The `artifact_path` here is
+where Ansible will download the tarballs locally, so make sure you have
+permission to create/read it, and `artifact_tarball` is the path to the tarball
+itself. The role does verify hashes in either situation.
+
     coind_binary: "{{ _coind_binary[coind_name] }}"
     coind_binary_cli: "{{ _coind_binary_cli[coind_name] }}"
 

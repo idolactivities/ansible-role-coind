@@ -9,6 +9,11 @@ coind_home: "/var/lib/{{ coind_name }}"
 coind_url: "{{ _coind_urls[coind_name] }}"
 coind_version: "{{ _coind_latest_version[coind_name] }}"
 coind_sha256sum: "{{ _coind_sha256sums[coind_name][coind_version] }}"
+
+coind_offline_install: no
+coind_offline_artifact_path: "~/.cache/ansible/{{ coind_name }}"
+coind_offline_artifact_tarball: "{{ coind_offline_artifact_path }}/{{ coind_name }}-{{ coind_version }}.tar.gz"
+
 coind_binary: "{{ _coind_binary[coind_name] }}"
 coind_binary_cli: "{{ _coind_binary_cli[coind_name] }}"
 

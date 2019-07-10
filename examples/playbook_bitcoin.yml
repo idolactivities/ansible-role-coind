@@ -15,6 +15,7 @@
       rpcbind: 0.0.0.0
       rpcallowip: 0.0.0.0/0
     coind_install_cli: yes
+    coind_offline_install: yes
 
 # This deploys an instance of the latest version of bitcoind running on
 # testnet, enables and configures the RPC API with a user, opens it to the
