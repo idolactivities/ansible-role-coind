@@ -8,13 +8,16 @@
       testnet: 1
       server: 1
       rpcauth:
-        - "apiuser:8d3df7a898de47ab3f17fa815d503838$078536864f71ef30bfbce4262c25b4c3bb5a926d263b18c97197095a053b5f8b"
+        - "apiuser:69c355a0ffcb1e5108d2539a607c38e8$40078288541643c12247e8e3309fefc314c85bc9608bbdbb188f0f8997bba223"
       rpcuser: apiuser
-      rpcpassword: rlwPZ7gbH9tgQXWxtBQMn9SKWb2BonWop7gh9JgLDwE=
+      rpcpassword: apipass
     coind_config_test:
+      rpcbind: 0.0.0.0
       rpcallowip: 0.0.0.0/0
     coind_install_cli: yes
 
 # This deploys an instance of the latest version of bitcoind running on
 # testnet, enables and configures the RPC API with a user, opens it to the
-# entire address space, and installs bitcoin-cli.
+# entire address space, and installs bitcoin-cli. Test with:
+#
+#     bitcoin-cli -rpcuser=apiuser -rpcpass=apipass getnetworkinfo

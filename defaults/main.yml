@@ -40,11 +40,12 @@ coind_config_regtest: {}
 #  rpcpassword: "DONT_USE_THIS_YOU_WILL_GET_ROBBED_GVOjjqrRUIF2md49ioR2ps-ZMqCAm5M5YIL8Vh3SQrg="
 #  rpcconnect: "{{ ansible_default_ipv4.address }}"
 #coind_config_test:
-#  port: 18333
+#  port: 28333
 #  addnode:
 #    - 10.10.0.24
-#    - 10.10.0.42:8333
-#  rpcport: 18332
+#    - 10.10.0.42:18333
+#  rpcbind: 0.0.0.0
+#  rpcport: 28332
 #  rpcallowip:
 #    - 10.10.0.0/24
 
