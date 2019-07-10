@@ -4,15 +4,17 @@
   roles:
     - fressets.coind
   vars:
-    coind_config:
+    coind_config_global:
       testnet: 1
       server: 1
       rpcauth:
         - "apiuser:8d3df7a898de47ab3f17fa815d503838$078536864f71ef30bfbce4262c25b4c3bb5a926d263b18c97197095a053b5f8b"
       rpcuser: apiuser
       rpcpassword: rlwPZ7gbH9tgQXWxtBQMn9SKWb2BonWop7gh9JgLDwE=
+    coind_config_test:
+      rpcallowip: 0.0.0.0/0
     coind_install_cli: yes
 
 # This deploys an instance of the latest version of bitcoind running on
-# testnet, enables and configures the RPC API with a user, and installs
-# bitcoin-cli.
+# testnet, enables and configures the RPC API with a user, opens it to the
+# entire address space, and installs bitcoin-cli.

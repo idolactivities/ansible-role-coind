@@ -1,12 +1,26 @@
 {{ ansible_managed | comment }}
-{% for setting, value in coind_config.items() %}
-{%   if value is iterable and value is not string %}
-{%     for sub in value %}
+
+{# This processes the config dictionaries for the different networks. #}
+{% for scope in ["global", "main", "test", "regtest"] %}
+{%   set coind_selected_config = vars["coind_config_" + scope] %}
+{%   if coind_selected_config | length > 0 %}
+{# Other than for the global config, output a [Section] header. #}
+{%     if scope != "global" %}
+[{{ scope }}]
+{%     endif %}
+{%     for setting, value in coind_selected_config.items() %}
+{# Loop through every item in the config and if one of them contains a list,
+   loop through those, outputting the values with the same key. #}
+{%       if value is iterable and value is not string %}
+{%         for sub in value %}
 {{ setting }}={{ sub }}
-{%     endfor %}
-{%   else %}
+{%         endfor %}
+{%       else %}
 {{ setting }}={{ value }}
+{%       endif %}
+{%     endfor %}
+{# newline to make the generated config more readable #}
+
 {%   endif %}
 {% endfor %}
-
 # vim: ft=jinja
