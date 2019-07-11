@@ -14,6 +14,16 @@
     coind_config_test:
       rpcbind: 0.0.0.0
       rpcallowip: 0.0.0.0/0
+      # Intentionally configure bitcoind to connect to an invalid node so that
+      # coind does not consume bandwidth to sync the block database. This is
+      # mainly to prevent developers on Comcast (and other ISPs with bandwidth
+      # limits) from hitting their bandwidth cap accidentally.
+      #
+      # Comment this line out if you intend to use this Vagrantfile for
+      # integration testing with other software.  For the purposes of testing
+      # this role itself, we don't really need to download the block database,
+      # thus this artificial handicap should be fine for most.
+      connect: 127.0.0.1:1234
     coind_install_cli: yes
     coind_offline_install: yes
 
