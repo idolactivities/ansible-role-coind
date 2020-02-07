@@ -1,0 +1,6 @@
+---
+- hosts: bitcoind
+  become: True
+  any_errors_fatal: True
+  roles:
+    - idolactivities.coind

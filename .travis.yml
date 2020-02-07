@@ -1,0 +1,38 @@
+---
+language: python
+sudo: required
+dist: trusty
+cache:
+  directories: [ '$HOME/lxc' ]
+  pip: true
+matrix:
+  fast_finish: true
+env:
+- ANSIBLE_GIT_VERSION='devel' # 2.10.x development branch
+- ANSIBLE_VERSION='<2.10.0' # 2.9.x
+install:
+- if [ "$ANSIBLE_GIT_VERSION" ]; then pip install "https://github.com/ansible/ansible/archive/${ANSIBLE_GIT_VERSION}.tar.gz";
+  else pip install "ansible${ANSIBLE_VERSION}"; fi;
+  pip install --pre ansible-lint
+- ansible --version
+- ansible-galaxy install lae.travis-lxc,v0.8.1
+- ansible-playbook tests/install.yml -i tests/inventory
+- git archive --format tar.gz HEAD > idolactivities.coind.tar.gz &&
+  ansible-galaxy install idolactivities.coind.tar.gz,$(git rev-parse HEAD),idolactivities.coind &&
+  rm idolactivities.coind.tar.gz
+before_script: cd tests/
+script:
+- ansible-lint ../ || true
+- ansible-playbook -i inventory deploy.yml --syntax-check
+- 'ansible-playbook -i inventory -v deploy.yml & pid=$!;
+  { while true; do sleep 1; kill -0 $pid 2>/dev/null || break; printf "\0"; done }'
+- 'ANSIBLE_STDOUT_CALLBACK=debug ANSIBLE_DISPLAY_SKIPPED_HOSTS=no ANSIBLE_DISPLAY_OK_HOSTS=no
+  unbuffer ansible-playbook -vv -i inventory deploy.yml &> idempotency.log'
+- 'grep -A1 "PLAY RECAP" idempotency.log | grep -qP "changed=0 .*failed=0 .*" &&
+  (echo "Idempotence: PASS"; exit 0) || (echo "Idempotence: FAIL"; cat idempotency.log; exit 1)'
+- ANSIBLE_STDOUT_CALLBACK=debug ansible-playbook -i inventory -v test.yml
+notifications:
+  webhooks:
+    urls:
+      - https://galaxy.ansible.com/api/v1/notifications/
+      - https://t2d.idolactiviti.es/notify

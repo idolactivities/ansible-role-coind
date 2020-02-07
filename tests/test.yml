@@ -1,0 +1,21 @@
+---
+- hosts: bitcoind
+  remote_user: root
+  become: True
+  tasks:
+    - block:
+      - name: bitcoind service status
+        command: "systemctl status bitcoind.service"
+        changed_when: False
+      - name: bitcoind service journal
+        command: "journalctl --no-pager -xu bitcoind.service"
+        changed_when: False
+      - name: bitcoind configuration
+        command: "cat /etc/bitcoin/bitcoin.conf"
+        changed_when: False
+      - name: bitcoind application log
+        command: "cat /etc/bitcoin/debug.log"
+        changed_when: False
+      ignore_errors: True
+    - name: Ensure bitcoind RPC returns a valid response
+      command: "bitcoin-cli -testnet=1 -rpcuser=apiuser -rpcpassword=apipass getnetworkinfo"

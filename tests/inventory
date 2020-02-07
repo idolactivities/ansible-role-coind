@@ -1,0 +1,9 @@
+[coind:children]
+bitcoind
+
+[bitcoind]
+bitcoin-debian-buster ansible_host=debian-buster-01
+bitcoin-debian-stretch ansible_host=debian-stretch-01
+bitcoin-ubuntu-bionic ansible_host=ubuntu-bionic-01
+bitcoin-ubuntu-xenial ansible_host=ubuntu-xenial-01
+bitcoin-centos-7 ansible_host=centos-7-01
