@@ -2,7 +2,7 @@
 - hosts: all
   become: yes
   roles:
-    - fressets.coind
+    - idolactivities.coind
   vars:
     coind_config_global:
       testnet: 1

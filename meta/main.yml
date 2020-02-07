@@ -1,9 +1,9 @@
 galaxy_info:
   author: Musee Ullah
   description: Installs and configures a coind (e.g. bitcoind).
-  company: Fressets
+  company: Idol Activities
   license: MIT
-  min_ansible_version: 2.4
+  min_ansible_version: 2.5
   platforms:
     - name: Debian
       versions:

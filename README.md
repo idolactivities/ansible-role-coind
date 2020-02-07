@@ -1,4 +1,4 @@
-fressets.coind
+idolactivities.coind
 ==============
 
 Deploys and configures the Bitcoin Core daemon, bitcoind.
@@ -11,10 +11,8 @@ Quickstart
 
 If you already have Ansible installed and are pretty familiar with it, then:
 
-    # Since this role isn't published to Ansible Galaxy, you'll need to install it
-    # directly from GitHub (Ansible will ask for credentials).
-    ansible-galaxy install git+https://github.com/fressets/ansible-role-coind.git,master,fressets.coind --force
-    ansible-playbook -i your.server.fqdn, ~/.ansible/roles/fressets.coind/examples/playbook_bitcoin.yml
+    ansible-galaxy install idolactivities.coind --force
+    ansible-playbook -i your.server.fqdn, ~/.ansible/roles/idolactivities.coind/examples/playbook_bitcoin.yml
 
 Refer to that playbook for more information. You'll likely want to create your
 own playbook (and store secrets using Ansible Vault or something).
@@ -22,7 +20,7 @@ own playbook (and store secrets using Ansible Vault or something).
 If you don't have a server, you can also use Vagrant:
 
     # after following the installation step from earlier...
-    cd ~/.ansible/roles/fressets.coind/
+    cd ~/.ansible/roles/idolactivities.coind/
     vagrant up
 
 The `bitcoind` running in that VM will be accessible from your machine, so you
@@ -37,10 +35,10 @@ If you are interested in contributing to this role, you may want to use the
 following setup for testing changes with Vagrant locally.
 
     # Your clone method may differ (e.g. if you forked this repository)
-    git clone git@github.com:fressets/ansible-role-coind.git
+    git clone git@github.com:idolactivities/ansible-role-coind.git
     cd ansible-role-coind/
     mkdir -p ~/.ansible/roles/
-    ln -s $PWD ~/.ansible/roles/fressets.coind
+    ln -s $PWD ~/.ansible/roles/idolactivities.coind
 
 We're effectively installing the Ansible role here, but it'll stay up to date
 with any local modifications.
